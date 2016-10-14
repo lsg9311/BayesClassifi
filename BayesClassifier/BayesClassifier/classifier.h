@@ -32,6 +32,11 @@ class TSC {
 private:
 	double s_rate;
 	double e_rate;
+
+	int T0;
+	int T1;
+	int F0;
+	int F1;
 public:
 	TSC();
 	void eval_rate(DataSet* test_set, Result trn_value);

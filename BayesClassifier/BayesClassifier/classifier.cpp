@@ -81,6 +81,8 @@ void TSC::eval_rate(DataSet* test_set, Result trn_value) {
 	int error = 0;
 	int N = test_set->size();
 
+	const double C = -5; //emprical adjustment value
+
 	int answer;
 	int x_iter = 0;
 
@@ -94,6 +96,8 @@ void TSC::eval_rate(DataSet* test_set, Result trn_value) {
 		constant += (log(trn_value.var[1][x_iter]) - log(trn_value.var[0][x_iter]));
 	}
 	constant -= log(pow(trn_value.prob[1], 2)) - log(pow(trn_value.prob[0], 2));
+	//add some constant
+	constant += C;
 	//testing data
 	for (int iter = 0; iter < N; iter++) {
 		cur_data = test_set->get_data(iter);
@@ -115,15 +119,19 @@ void TSC::eval_rate(DataSet* test_set, Result trn_value) {
 		//test
 		if (answer == cur_data.r) {
 			success++;
+			if (answer == 0) this->T0++;
+			else if (answer == 1) this->T1++;
+			
 		}
 		else {
 			error++;
+			if (answer == 0) this->F0++;
+			else if (answer == 1) this->F1++;
 		}
 	}
 	//evaluate
 	this->s_rate = (double)success / (double)N;
 	this->e_rate = (double)error / (double)N;
-	
 	return;
 }
 
@@ -131,5 +139,9 @@ void TSC::print_result() {
 	cout << "Success : " << this->s_rate << endl;
 	cout << "Error : " << this->e_rate << endl;
 
+	cout << "T0 : " << this->T0 << endl;
+	cout << "T1 : " << this->T1 << endl;
+	cout << "F0 : " << this->F0 << endl;
+	cout << "F1 : " << this->F1 << endl;
 	return;
 }
