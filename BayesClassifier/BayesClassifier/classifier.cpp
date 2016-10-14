@@ -21,37 +21,49 @@ void TRC::classify(DataSet* data_set){
 	}
 }
 
-double TRC::eval_prob(int r) {
+void TRC::eval_prob(int r) {
 	this->result.prob[r] = (double)this->data[r].size() / ((double)data[0].size() + (double)data[1].size());
-	return result.prob[r];
+	return;
 }
 
 int TRC::nofr(int r) {
 	return this->data[r].size();
 }
 
-double TRC::eval_mean(int r) {
-	int iter = 0;
+void TRC::eval_mean(int r) {
+	int data_iter = 0;
+	int	x_iter = 0;
 	Data temp_data;
-	double sum_x=0;
-	for (iter = 0; iter < this->data[r].size(); iter++) {
-		temp_data = this->data[r].get_data(iter);
-		sum_x += temp_data.x[0];
+	double sum_x[13] = { 0 };
+	//sum
+	for (data_iter = 0; data_iter < this->data[r].size(); data_iter++) {
+		temp_data = this->data[r].get_data(data_iter);
+		for (x_iter = 0; x_iter < 13; x_iter++) {
+			sum_x[x_iter] += temp_data.x[x_iter];
+		}
 	}
-	this->result.mean[r] = sum_x / this->data[r].size();
-	return result.mean[r];
+	//evaluate mean
+	for (x_iter = 0; x_iter < 13; x_iter++) {
+		this->result.mean[r][x_iter] = sum_x[x_iter] / this->data[r].size();
+	}
+	return;
 }
 
-double TRC::eval_var(int r) {
-	int iter = 0;
+void TRC::eval_var(int r) {
+	int data_iter = 0;
+	int x_iter = 0;
 	Data temp_data;
-	double sum_x = 0;
-	for (iter = 0; iter < this->data[r].size(); iter++) {
-		temp_data = this->data[r].get_data(iter);
-		sum_x += pow((temp_data.x[0]-this->result.mean[r]),2);
+	double sum_x[13] = { 0 };
+	for (data_iter = 0; data_iter < this->data[r].size(); data_iter++) {
+		temp_data = this->data[r].get_data(data_iter);
+		for (x_iter = 0; x_iter < 13; x_iter++) {
+			sum_x[x_iter] += pow((temp_data.x[x_iter] - this->result.mean[r][x_iter]), 2);
+		}
 	}
-	this->result.var[r] = sum_x / this->data[r].size();
-	return result.var[r];
+	for (x_iter = 0; x_iter < 13; x_iter++) {
+		this->result.var[r][x_iter] = sum_x[x_iter] / this->data[r].size();
+	}
+	return;
 }
 
 Result TRC::get_result() {
@@ -70,21 +82,27 @@ void TSC::eval_rate(DataSet* test_set, Result trn_value) {
 	int N = test_set->size();
 
 	int answer;
+	int x_iter = 0;
 
 	Data cur_data;
 
-	double constant;
-	double cmp_value;
-	double x1;
-
-	constant = log(trn_value.var[1]) - log(trn_value.var[0]);
+	double constant=0;
+	double cmp_value = 0;
+	double x;
+	//eval constant
+	for (x_iter = 0; x_iter < 1; x_iter++) {
+		constant += (log(trn_value.var[1][x_iter]) - log(trn_value.var[0][x_iter]));
+	}
 	constant -= log(pow(trn_value.prob[1], 2)) - log(pow(trn_value.prob[0], 2));
+	//testing data
 	for (int iter = 0; iter < N; iter++) {
 		cur_data = test_set->get_data(iter);
-		x1 = cur_data.x[0];
-		cmp_value = pow((x1 - trn_value.mean[0]), 2) / trn_value.var[0];
-		cmp_value -= pow((x1 - trn_value.mean[1]), 2) / trn_value.var[1];
-
+		for (x_iter = 0; x_iter < 1; x_iter++) {
+			x = cur_data.x[x_iter];
+			cmp_value += pow((x - trn_value.mean[0][x_iter]), 2) / trn_value.var[0][x_iter];
+			cmp_value -= pow((x - trn_value.mean[1][x_iter]), 2) / trn_value.var[1][x_iter];
+		}
+		
 		//classify
 		if (cmp_value < constant)	answer = 0;
 		else if (cmp_value > constant)	answer = 1;
@@ -104,7 +122,7 @@ void TSC::eval_rate(DataSet* test_set, Result trn_value) {
 	//evaluate
 	this->s_rate = (double)success / (double)N;
 	this->e_rate = (double)error / (double)N;
-
+	
 	return;
 }
 

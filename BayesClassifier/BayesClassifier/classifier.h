@@ -5,8 +5,8 @@
 
 struct Result {
 	double prob[2] = { 0 };
-	double mean[2] = { 0 };
-	double var[2] = { 0 };
+	double mean[2][13] = { 0 };
+	double var[2][13] = { 0 };
 };
 
 //training data classify
@@ -22,9 +22,9 @@ public:
 
 	//r=0 : 0 class, r=1 : 1 class
 	int nofr(int r);
-	double eval_prob(int r);
-	double eval_mean(int r);
-	double eval_var(int r);
+	void eval_prob(int r);
+	void eval_mean(int r);
+	void eval_var(int r);
 };
 
 //test data classify

@@ -32,6 +32,7 @@ void DataReader::save_data(string filepath, DataSet* data_set) {
 	int x_iter = 0;
 
 	while (getline(trFile, trLine)) {
+		if (trLine.compare(" 0") == 0) continue;
 		new_data = Data();
 		for (x_iter = 0; x_iter < 13; x_iter++) {
 			if (trLine[0] == ' ') trLine = trLine.substr(1);

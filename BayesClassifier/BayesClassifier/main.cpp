@@ -34,10 +34,17 @@ int main() {
 			trc.eval_prob(1);
 
 			train_value = trc.get_result();
+			int x_iter = 0;
 			cout << "Training Complete" << endl;
 			cout << "Probability : " << train_value.prob[0] << ", " << train_value.prob[1] << endl;
-			cout << "Mean : " << train_value.mean[0] << ", " << train_value.mean[1] << endl;
-			cout << "Variance : " << train_value.var[0] << ", " << train_value.var[1] << endl;
+			cout << "Mean : " << endl;
+			for (x_iter = 0; x_iter < 13; x_iter++) {
+				cout << train_value.mean[0][x_iter] << ", " << train_value.mean[1][x_iter] << endl;
+			}
+			cout << "Variance : " << endl;
+			for (x_iter = 0; x_iter < 13; x_iter++) {
+				cout << train_value.var[0][x_iter] << ", " << train_value.var[1][x_iter] << endl;
+			}
 		}
 		if (menu == 2) {
 			data_reader.save_data("tst.txt", &test_set);
