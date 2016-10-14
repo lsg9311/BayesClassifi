@@ -90,14 +90,15 @@ void TSC::eval_rate(DataSet* test_set, Result trn_value) {
 	double cmp_value = 0;
 	double x;
 	//eval constant
-	for (x_iter = 0; x_iter < 1; x_iter++) {
+	for (x_iter = 0; x_iter < 13; x_iter++) {
 		constant += (log(trn_value.var[1][x_iter]) - log(trn_value.var[0][x_iter]));
 	}
 	constant -= log(pow(trn_value.prob[1], 2)) - log(pow(trn_value.prob[0], 2));
 	//testing data
 	for (int iter = 0; iter < N; iter++) {
 		cur_data = test_set->get_data(iter);
-		for (x_iter = 0; x_iter < 1; x_iter++) {
+		cmp_value = 0;
+		for (x_iter = 0; x_iter < 13; x_iter++) {
 			x = cur_data.x[x_iter];
 			cmp_value += pow((x - trn_value.mean[0][x_iter]), 2) / trn_value.var[0][x_iter];
 			cmp_value -= pow((x - trn_value.mean[1][x_iter]), 2) / trn_value.var[1][x_iter];
