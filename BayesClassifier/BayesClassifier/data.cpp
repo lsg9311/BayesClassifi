@@ -46,5 +46,6 @@ void DataReader::save_data(string filepath, DataSet* data_set) {
 
 		data_set->insert_data(new_data);
 	}
+	trFile.close();
 	return;
 }
